@@ -3,6 +3,7 @@ name = "jcode-provider-anthropic-runtime"
 version = "0.1.0"
 edition = "2024"
 description = "Direct Anthropic Messages API provider runtime (OAuth + API key, SSE streaming) for jcode, kept downstream of jcode-base so provider edits do not rebuild the app spine"
+publish = false
 
 [lib]
 name = "jcode_provider_anthropic_runtime"
