@@ -2,6 +2,7 @@
 name = "jcode-provider-metadata"
 version = "0.1.0"
 edition = "2024"
+publish = false
 
 [lib]
 name = "jcode_provider_metadata"
