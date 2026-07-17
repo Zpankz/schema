@@ -1,3 +1,11 @@
+//! Batch tool-call progress types for the jcode coding-agent workspace.
+//!
+//! This crate defines the serde-serializable progress payloads streamed while
+//! jcode executes a batch of tool calls: `BatchProgress` tracks the parent
+//! batch (session, totals, completed count, still-running sub-calls), while
+//! `BatchSubcallProgress` and `BatchSubcallState` record the ordered
+//! per-sub-call running/succeeded/failed state used for richer UI rendering.
+
 use jcode_message_types::ToolCall;
 use serde::{Deserialize, Serialize};
 

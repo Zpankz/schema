@@ -1,3 +1,14 @@
+//! Usage, quota, and telemetry types for the jcode coding-agent workspace.
+//!
+//! This crate holds the plain data structures shared by jcode's harness and
+//! server components for reporting provider usage and rate limits
+//! (`ProviderUsage`, `UsageLimit`), tracking GitHub Copilot request and token
+//! consumption (`CopilotUsageTracker`), and serializing anonymous telemetry
+//! events (install, upgrade, auth, session lifecycle, turn end, feedback, and
+//! sponsored discovery). It also provides small helpers to classify tool
+//! calls into telemetry categories, derive workflow flags from session
+//! counts, and sanitize free-text fields before they are emitted.
+
 #[derive(Debug, Clone, Default)]
 pub struct ProviderUsage {
     pub provider_name: String,
@@ -228,6 +239,7 @@ impl TelemetryProjectProfile {
     }
 }
 
+/// Strips control characters (keeping newlines, carriage returns, and tabs), trims whitespace, and truncates feedback text to 2000 characters.
 pub fn sanitize_feedback_text(value: &str) -> String {
     value
         .chars()
@@ -650,6 +662,7 @@ pub struct TurnEndEvent {
     pub ran_from_cargo: bool,
 }
 
+/// Removes ANSI escape sequences and any remaining control characters from a telemetry label, returning the trimmed text.
 pub fn sanitize_telemetry_label(value: &str) -> String {
     let mut cleaned = String::with_capacity(value.len());
     let mut chars = value.chars().peekable();
@@ -674,6 +687,7 @@ pub fn sanitize_telemetry_label(value: &str) -> String {
     cleaned.trim().to_string()
 }
 
+/// Returns true when the tool name or its command/description/task input appears to invoke a test runner (cargo test, pytest, jest, and similar).
 pub fn looks_like_telemetry_test_run(name: &str, input: &serde_json::Value) -> bool {
     let mut haystacks = Vec::new();
     haystacks.push(name.to_ascii_lowercase());

@@ -3,6 +3,7 @@ name = "jcode-logging"
 version = "0.1.0"
 edition = "2024"
 description = "File logging, structured events, and thread/task-local logging context for jcode"
+publish = false
 
 [lib]
 name = "jcode_logging"

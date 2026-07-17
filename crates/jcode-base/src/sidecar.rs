@@ -556,7 +556,13 @@ Be conservative - only say "yes" if the memory would actually be useful for the 
         let mut is_relevant = false;
         for line in response.lines() {
             let line = line.trim();
-            if line.len() >= 9 && line[..9].eq_ignore_ascii_case("relevant:") {
+            // `get(..9)` fails cleanly when byte 9 is not a char boundary
+            // (untrusted LLM output may start with multi-byte characters);
+            // a successful get also proves 9 is a boundary, so the tail
+            // slice below is then guaranteed safe.
+            if let Some(prefix) = line.get(..9)
+                && prefix.eq_ignore_ascii_case("relevant:")
+            {
                 let value = line[9..].trim();
                 is_relevant = value.eq_ignore_ascii_case("yes") || value.starts_with("yes");
                 break;

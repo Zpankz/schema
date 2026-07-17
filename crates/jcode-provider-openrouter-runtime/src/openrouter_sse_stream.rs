@@ -304,19 +304,29 @@ fn is_retryable_error(error_str: &str) -> bool {
     match parsed_http_status(error_str) {
         Some(400 | 401 | 402 | 403 | 404 | 405 | 406 | 422) => return false,
         Some(429) => return true,
+        Some(status) if (500..=599).contains(&status) => return true,
         _ => {}
     }
 
     jcode_provider_core::is_transient_transport_error(error_str)
         || error_str.contains("stream error")
         || error_str.contains("eof")
-        || error_str.contains("5")
-            && (error_str.contains("50")
-                || error_str.contains("502")
-                || error_str.contains("503")
-                || error_str.contains("504")
-                || error_str.contains("internal server error"))
+        || error_str.contains("internal server error")
+        || mentions_server_error_token(error_str)
         || error_str.contains("overloaded")
+}
+
+/// True when the error text mentions a 5xx status as a standalone token.
+///
+/// Substring matching on bare digits is unsafe: "50" appears in token counts
+/// ("128500 tokens"), byte sizes, timestamps, and model names, which would
+/// misclassify deterministic failures as transient and burn retries. Splitting
+/// on non-alphanumeric boundaries keeps matching to real status tokens like
+/// "HTTP 503" or "502 Bad Gateway".
+fn mentions_server_error_token(error_str: &str) -> bool {
+    error_str
+        .split(|c: char| !c.is_ascii_alphanumeric())
+        .any(|token| matches!(token, "500" | "502" | "503" | "504"))
 }
 
 #[cfg(test)]
@@ -389,5 +399,29 @@ mod tests {
         assert!(is_retryable_error(
             "chat request failed\n  status: 429 unknown\n  response: {}"
         ));
+    }
+
+    #[test]
+    fn bare_status_tokens_remain_retryable_without_status_marker() {
+        // Errors that carry a 5xx code but no "status: NNN" marker must still
+        // be classified as transient.
+        assert!(is_retryable_error("HTTP 503 from upstream"));
+        assert!(is_retryable_error("502 Bad Gateway"));
+        assert!(is_retryable_error("got 500 from proxy"));
+    }
+
+    #[test]
+    fn embedded_digits_are_not_misclassified_as_server_errors() {
+        // Regression: the old heuristic treated any string containing both "5"
+        // and "50" as a 5xx failure, so deterministic errors mentioning token
+        // counts, sizes, or model names were retried 3+ times with backoff.
+        assert!(!is_retryable_error(
+            "invalid request: you requested up to 128500 tokens, but the limit is 65536"
+        ));
+        assert!(!is_retryable_error("model gpt-5.0 does not support this parameter"));
+        assert!(!is_retryable_error("file exceeds 5096 byte inline limit"));
+        assert!(!mentions_server_error_token("128500"));
+        assert!(mentions_server_error_token("HTTP 503"));
+        assert!(mentions_server_error_token("502 Bad Gateway"));
     }
 }

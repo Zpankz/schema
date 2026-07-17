@@ -3,6 +3,7 @@ name = "jcode-provider-copilot-runtime"
 version = "0.1.0"
 edition = "2024"
 description = "GitHub Copilot provider runtime (direct API, tier detection, premium modes) for jcode, kept downstream of jcode-base so provider edits do not rebuild the app spine"
+publish = false
 
 [lib]
 name = "jcode_provider_copilot_runtime"

@@ -1,3 +1,13 @@
+//! Session data types and cross-session search helpers for jcode.
+//!
+//! This crate holds the plain data structures used to store, render, and
+//! resume jcode agent sessions: `ResumeTarget` for importing sessions from
+//! other agent harnesses (Claude Code, Codex, Pi, OpenCode, Cursor),
+//! `StoredMessage`/`StoredCompactionState` for persisted transcripts, and the
+//! `Rendered*` view types exchanged with the UI. It also implements the
+//! `session_search` tooling: query tokenization, fuzzy scoring, snippet
+//! extraction, and markdown report formatting for searching past sessions.
+
 use chrono::{DateTime, Utc};
 use jcode_message_types::{ContentBlock, Message, Role, ToolCall};
 use serde::{Deserialize, Serialize};

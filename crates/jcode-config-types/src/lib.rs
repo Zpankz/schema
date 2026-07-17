@@ -1,3 +1,13 @@
+//! Configuration types for the jcode coding-agent workspace.
+//!
+//! This crate defines the serde-serializable data model behind jcode's
+//! `config.toml`: per-section structs such as `ProviderConfig`, `DisplayConfig`,
+//! `FeatureConfig`, `AgentsConfig`, `CompactionConfig`, `HooksConfig`,
+//! `SafetyConfig`, `GatewayConfig`, and `KeybindingsConfig`, along with the
+//! enums that back individual settings (diff/diagram/reasoning display modes,
+//! update channel, swarm spawn mode, web search engine, and more). Defaults
+//! and lenient parsing keep older config files loading as jcode evolves.
+
 use serde::{Deserialize, Serialize};
 
 pub mod keybindings;

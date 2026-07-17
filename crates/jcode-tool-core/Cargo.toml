@@ -2,6 +2,7 @@
 name = "jcode-tool-core"
 version = "0.1.0"
 edition = "2024"
+publish = false
 
 [lib]
 name = "jcode_tool_core"

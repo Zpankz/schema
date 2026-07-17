@@ -1,3 +1,13 @@
+//! Agent memory types and retrieval helpers for the jcode workspace.
+//!
+//! Backs jcode's human-like agent memory: the persistent `MemoryEntry` /
+//! `MemoryStore` model (categories, trust levels, confidence decay, and
+//! embedding vectors), the `MemoryGraph` types re-exported from `graph`, and
+//! the runtime state types (`MemoryActivity`, `PipelineState`, `MemoryEvent`)
+//! that surface memory activity to the UI. Also provides pure search and
+//! ranking helpers — text normalization, top-k selection, relevance scoring,
+//! and prompt formatting — shared by the memory runtime and tools.
+
 pub mod graph;
 pub use graph::{
     ClusterEntry, Edge, EdgeKind, GRAPH_VERSION, GraphMetadata, MemoryGraph, TagEntry,

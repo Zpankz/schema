@@ -959,7 +959,15 @@ impl MemoryAgent {
 
         let existing: Vec<String> = {
             let context_summary = if context_owned.len() > 2000 {
-                &context_owned[context_owned.len() - 2000..]
+                // Slice on a char boundary: conversation text is
+                // user-controlled UTF-8 and byte-index slicing panics
+                // mid-codepoint, which would kill the memory agent
+                // mid-session.
+                let mut start = context_owned.len() - 2000;
+                while !context_owned.is_char_boundary(start) {
+                    start += 1;
+                }
+                &context_owned[start..]
             } else {
                 &context_owned
             };
