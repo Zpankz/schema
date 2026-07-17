@@ -23,10 +23,14 @@
 pub mod agent;
 pub mod backtest;
 pub mod deliberators;
+pub mod demo_provider;
 pub mod envs;
 pub mod executor;
 pub mod model;
 pub mod planner;
+pub mod program;
+pub mod protocol;
+pub mod session;
 pub mod timeline;
 
 pub use agent::{Deliberation, Deliberator, EpisodeLog, SchemaAgent};
@@ -34,4 +38,7 @@ pub use backtest::{run_backtest, BacktestReport, Mismatch, MismatchKind};
 pub use executor::{commit_actions, Environment, ExecutionReport, Observation};
 pub use model::{Prediction, WorldModel};
 pub use planner::{run_bfs, BfsReport, GoalVia};
+pub use program::{CellWrite, Effect, Rule, RuleProgram};
+pub use protocol::{DeliberationRequest, DeliberationResponse, ProtocolDeliberator};
+pub use session::Session;
 pub use timeline::{Grid, Timeline, Transition};

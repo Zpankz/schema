@@ -64,24 +64,54 @@ fn main() {
     let ok = match argv.as_slice() {
         ["demo", "toggle"] => demo_toggle(),
         ["demo", "cart"] => demo_cart(),
+        ["demo", "protocol"] => demo_protocol(),
         ["selftest"] => {
             let a = demo_toggle();
             println!();
             let b = demo_cart();
             println!();
-            println!("selftest: toggle={a} cart={b}");
-            a && b
+            let c = demo_protocol();
+            println!();
+            println!("selftest: toggle={a} cart={b} protocol={c}");
+            a && b && c
         }
         _ => {
             println!(
                 "schema — certified-world-model control loop (jcode-augmented harness)\n\
                  \n\
-                   schema demo toggle    mechanism discovery demo\n\
-                   schema demo cart      representation-revision demo\n\
-                   schema selftest       run both demos and report\n"
+                   schema demo toggle      mechanism discovery (native deliberator)\n\
+                   schema demo cart        representation-revision demo\n\
+                   schema demo protocol    discovery driven ENTIRELY via the JSON\n\
+                   \x20                     deliberation protocol — the world program is\n\
+                   \x20                     authored as text by a provider-shaped function\n\
+                   schema selftest         run all demos and report\n"
             );
             true
         }
     };
     std::process::exit(if ok { 0 } else { 1 });
+}
+
+/// The world program is authored entirely via the JSON deliberation protocol
+/// by a provider-shaped `&str -> String` responder — the working jcode seam.
+fn demo_protocol() -> bool {
+    use schema::demo_provider::toggle_provider;
+    use schema::program::RuleProgram;
+    use schema::protocol::ProtocolDeliberator;
+
+    println!("=== ToggleMaze via the JSON deliberation protocol ===");
+    let mut env = ToggleMaze::new();
+    env.reset();
+    let delib = ProtocolDeliberator::new(toggle_provider);
+    let model = WorldModel::from_program(RuleProgram::vacuous(), "vacuous program");
+    let mut agent = SchemaAgent::new(env, model, delib);
+    let log = agent.run();
+    print_log(&log);
+    let final_bt = schema::run_backtest(&agent.model, &agent.timeline);
+    println!("final certification: {}", final_bt.summary());
+    if let Some(p) = agent.model.program() {
+        println!("world program authored via JSON (readable as text):\n{}", p.to_pretty());
+    }
+    println!("JSON deliberation turns: {}", agent.deliberator.transcript.len());
+    log.won && final_bt.green()
 }

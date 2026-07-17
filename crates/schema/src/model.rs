@@ -46,11 +46,53 @@ pub struct WorldModel {
     is_goal: GoalFn,
     pub revision: u32,
     pub history: Vec<String>,
+    /// The current program, when this model is program-backed. `None` for
+    /// closure-backed models (the original demos). When present, this is the
+    /// serializable, diffable, LLM-authored source of the model's behavior.
+    program: Option<crate::program::RuleProgram>,
 }
 
 impl WorldModel {
     pub fn new(step: StepFn, is_goal: GoalFn, description: &str) -> Self {
-        Self { step, is_goal, revision: 0, history: vec![description.to_string()] }
+        Self { step, is_goal, revision: 0, history: vec![description.to_string()], program: None }
+    }
+
+    /// Build a model whose behavior IS an interpretable [`RuleProgram`]. The
+    /// program is retained so it can be serialized, diffed, and re-authored.
+    pub fn from_program(program: crate::program::RuleProgram, description: &str) -> Self {
+        let p_step = program.clone();
+        let p_goal = program.clone();
+        Self {
+            step: Box::new(move |g: &Grid, a: &str| p_step.step(g, a)),
+            is_goal: Box::new(move |g: &Grid| p_goal.is_goal(g)),
+            revision: 0,
+            history: vec![description.to_string()],
+            program: Some(program),
+        }
+    }
+
+    /// The current program, if this model is program-backed.
+    pub fn program(&self) -> Option<&crate::program::RuleProgram> {
+        self.program.as_ref()
+    }
+
+    /// Install a new program as a joint revision, recording the text diff
+    /// against the prior program in the revision history.
+    pub fn revise_program(&mut self, program: crate::program::RuleProgram, description: &str) {
+        let diff = match &self.program {
+            Some(prev) => {
+                let d = program.diff(prev);
+                if d.is_empty() { "no structural change".to_string() } else { d.join("; ") }
+            }
+            None => "installed initial program".to_string(),
+        };
+        let p_step = program.clone();
+        let p_goal = program.clone();
+        self.step = Box::new(move |g: &Grid, a: &str| p_step.step(g, a));
+        self.is_goal = Box::new(move |g: &Grid| p_goal.is_goal(g));
+        self.program = Some(program);
+        self.revision += 1;
+        self.history.push(format!("{description} [{diff}]"));
     }
 
     /// A model that predicts "nothing changes" — the honest zero hypothesis.
