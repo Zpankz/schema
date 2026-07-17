@@ -560,12 +560,12 @@ Be conservative - only say "yes" if the memory would actually be useful for the 
             // (untrusted LLM output may start with multi-byte characters);
             // a successful get also proves 9 is a boundary, so the tail
             // slice below is then guaranteed safe.
-            if let Some(prefix) = line.get(..9) {
-                if prefix.eq_ignore_ascii_case("relevant:") {
-                    let value = line[9..].trim();
-                    is_relevant = value.eq_ignore_ascii_case("yes") || value.starts_with("yes");
-                    break;
-                }
+            if let Some(prefix) = line.get(..9)
+                && prefix.eq_ignore_ascii_case("relevant:")
+            {
+                let value = line[9..].trim();
+                is_relevant = value.eq_ignore_ascii_case("yes") || value.starts_with("yes");
+                break;
             }
         }
         let reason = response
