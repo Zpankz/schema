@@ -3,6 +3,7 @@ name = "jcode-provider-gemini-runtime"
 version = "0.1.0"
 edition = "2024"
 description = "Gemini provider runtime (Code Assist OAuth + Developer API key) for jcode, kept downstream of jcode-base so provider edits do not rebuild the app spine"
+publish = false
 
 [lib]
 name = "jcode_provider_gemini_runtime"
