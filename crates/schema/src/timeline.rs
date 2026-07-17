@@ -13,9 +13,11 @@
 
 pub type Grid = Vec<Vec<u8>>;
 
-/// One real environment transition. No public constructor: transitions are
-/// minted only by [`Timeline::append`], so every instance corresponds to a
-/// recorded interaction.
+/// One real environment transition. Fields are public for inspection; a
+/// free-standing `Transition` can be literal-constructed, but nothing can
+/// insert one into a `Timeline` except [`Timeline::append`], and recorded
+/// history is reachable only by shared reference — so the ledger itself
+/// stays append-only.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Transition {
     pub index: usize,
