@@ -3,6 +3,7 @@ name = "jcode-provider-openrouter-runtime"
 version = "0.1.0"
 edition = "2024"
 description = "OpenRouter / OpenAI-compatible provider runtime (aggregator + direct profile endpoints) for jcode, kept downstream of jcode-base so provider edits do not rebuild the app spine"
+publish = false
 
 [lib]
 name = "jcode_provider_openrouter_runtime"
