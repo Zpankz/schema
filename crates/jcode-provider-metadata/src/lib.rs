@@ -1,3 +1,12 @@
+//! Login-provider and OpenAI-compatible endpoint metadata for jcode.
+//!
+//! Single source of truth for the providers jcode can log into: the
+//! `LoginProviderDescriptor` catalog (auth kind, aliases, per-surface display
+//! ordering, and login targets) and the built-in `OpenAiCompatibleProfile`
+//! catalog for hosted and local OpenAI-compatible endpoints. Also provides
+//! helpers for resolving providers by id, alias, display name, or menu
+//! selection, plus validators for API base URLs and env var/file names.
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum LoginProviderAuthKind {
     OAuth,
