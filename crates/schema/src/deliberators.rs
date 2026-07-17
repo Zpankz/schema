@@ -163,8 +163,8 @@ impl Deliberator for ToggleDeliberator {
         model.revise(Some(Box::new(move |s: &Grid, a: &str| predict(&sem, s, a))), None, &desc);
 
         let ambiguous = self.ambiguous_colors();
-        if !ambiguous.is_empty() {
-            if let Some(probe) = Self::probe_path(current, &ambiguous) {
+        if !ambiguous.is_empty()
+            && let Some(probe) = Self::probe_path(current, &ambiguous) {
                 return Deliberation {
                     actions: probe.clone(),
                     intent: Intent::Experiment,
@@ -177,7 +177,6 @@ impl Deliberator for ToggleDeliberator {
                     ),
                 };
             }
-        }
         Deliberation {
             actions: vec![],
             intent: Intent::Plan,
@@ -270,8 +269,8 @@ impl Deliberator for CartDeliberator {
             self.install(model, "initial representation: static board + cart sprite; walls immutable");
         }
 
-        if let Some(ce) = counterexample {
-            if !self.unified {
+        if let Some(ce) = counterexample
+            && !self.unified {
                 // Learn the reflow from the observed diff the sprite model missed.
                 let pred = Self::cart_step(
                     &self.dock_cells,
@@ -308,7 +307,6 @@ impl Deliberator for CartDeliberator {
                     ),
                 };
             }
-        }
 
         if !self.unified && !self.cart_docked(current) {
             // Drive the cart to the dock as an observation point (LF52).
