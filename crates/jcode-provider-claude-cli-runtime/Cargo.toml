@@ -3,6 +3,7 @@ name = "jcode-provider-claude-cli-runtime"
 version = "0.1.0"
 edition = "2024"
 description = "Deprecated Claude CLI provider runtime (subprocess transport) for jcode, kept downstream of jcode-base so provider edits do not rebuild the app spine"
+publish = false
 
 [lib]
 name = "jcode_provider_claude_cli_runtime"
