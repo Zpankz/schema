@@ -1,3 +1,12 @@
+//! Goal, todo, and catch-up types for the jcode coding-agent workspace.
+//!
+//! This crate defines the data model behind jcode's task-tracking features:
+//! the long-lived `Goal` model (scope, status, milestones, and progress
+//! updates), the `TodoItem`/`TodoGoal` quality-gate model used by the todo
+//! tool (per-item confidence and blocked-by links, per-goal hill-climbability
+//! and ownership assessments), and the `CatchupBrief`/`PersistedCatchupState`
+//! types that summarize recent session activity when returning to a project.
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
